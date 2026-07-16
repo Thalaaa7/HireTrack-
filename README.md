@@ -18,29 +18,6 @@ It spans **authentication, relational data modeling, REST APIs, data visualizati
 
 ---
 
-## 🏗️ Architecture
-
-The system runs as three coordinated Docker containers, orchestrated via `docker-compose.yml`:
-
-```
-┌─────────────┐      ┌──────────────┐      ┌──────────────┐
-│  Frontend   │─────▶│   Backend    │─────▶│  PostgreSQL  │
-│ React + Vite│      │ Node/Express │      │   Database   │
-│  (Nginx)    │◀─────│   REST API   │◀─────│              │
-└─────────────┘      └──────────────┘      └──────────────┘
-                             │
-                             ▼
-                      ┌──────────────┐
-                      │  node-cron   │
-                      │ + nodemailer │
-                      │  (reminders) │
-                      └──────────────┘
-```
-
-**Backend startup flow** (`backend/src/index.js`): loads env vars → creates Express app → configures CORS/cookies/middleware → mounts routes → initializes the database → starts the cron scheduler. Clean, linear, and easy to reason about.
-
----
-
 ## 🧩 Tech Stack
 
 | Layer | Technologies |
@@ -54,7 +31,7 @@ The system runs as three coordinated Docker containers, orchestrated via `docker
 
 ---
 
-## 🔐 Why the Authentication Design Stands Out
+## 🔐 Why this Authentication Design ??
 
 Rather than a single long-lived token, the app implements a proper **access + refresh token pattern**:
 
