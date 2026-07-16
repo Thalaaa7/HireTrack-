@@ -1,411 +1,193 @@
-# 🚀 HireTrack — Full-Stack Job Application Tracker
 
-> A production-inspired full-stack application that helps job seekers organize, monitor, and analyze their job application process with authentication, analytics, automated follow-up reminders, and Dockerized deployment.
+# 🎯 HireTrack — Job Application Tracker
 
-<p align="center">
-  <img src="https://img.shields.io/badge/React-19-blue?logo=react">
-  <img src="https://img.shields.io/badge/Node.js-Express-green?logo=node.js">
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-blue?logo=postgresql">
-  <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker">
-  <img src="https://img.shields.io/badge/JWT-Authentication-orange">
-  <img src="https://img.shields.io/badge/License-MIT-success">
-</p>
+> A full-stack job application tracking system built with React, Node.js/Express, and PostgreSQL — complete with JWT authentication, analytics dashboards, and automated email reminders.
 
----
+## ✨ What HireTrack Does
 
-# 📌 Overview
+HireTrack helps job seekers stay organized during their search. Users can:
 
-Keeping track of dozens of job applications across multiple companies quickly becomes overwhelming. HireTrack solves this problem by providing a centralized dashboard where users can:
+- 🔐 Register and log in securely
+- 📋 Add and manage job applications
+- 🔄 Track and update application status (applied, interviewing, offer, rejected, etc.)
+- 🔍 Search and filter applications
+- 📊 View analytics on a visual dashboard
+- 📧 Receive automated reminder emails for follow-ups
 
-- Track job applications
-- Monitor application progress
-- Receive follow-up reminders
-- Analyze application statistics
-- Export application data
-- Securely manage their account
-
-The project demonstrates real-world full-stack development practices including authentication, REST APIs, scheduled background jobs, containerization, and responsive frontend development.
+It spans **authentication, relational data modeling, REST APIs, data visualization, and scheduled background jobs** — a genuinely full-stack feature set.
 
 ---
 
-# ✨ Features
+## 🏗️ Architecture
 
-## 🔐 Authentication
-
-- User Registration
-- Secure Login
-- JWT Authentication
-- Refresh Token Mechanism
-- Protected Routes
-- Persistent Sessions
-- Secure Password Hashing using bcrypt
-
----
-
-## 📋 Application Management
-
-Manage every job application from one dashboard.
-
-Users can:
-
-- Add new applications
-- Edit existing applications
-- Delete applications
-- Search by company or role
-- Filter by status
-- Track interview progress
-- Store notes
-- Save job URLs
-- Record salary ranges
-- Track locations
-- Export applications as CSV
-
----
-
-## 📊 Analytics Dashboard
-
-Interactive dashboard providing insights such as:
-
-- Total Applications
-- Status Distribution
-- Weekly Activity
-- Upcoming Follow-ups
-- Hiring Funnel Visualization
-
-This allows users to monitor their job search performance over time.
-
----
-
-## 📧 Automated Email Reminders
-
-HireTrack includes a scheduled reminder system that automatically checks for upcoming follow-ups and sends email notifications.
-
-Built using:
-
-- node-cron
-- Nodemailer
-
-This feature simulates real-world background task scheduling found in production applications.
-
----
-
-## 🐳 Docker Support
-
-Entire application can be launched with a single command using Docker Compose.
-
-Containers include:
-
-- Frontend
-- Backend
-- PostgreSQL Database
-
-This makes local development and deployment simple and consistent.
-
----
-
-# 🏗️ Tech Stack
-
-## Frontend
-
-- React
-- Vite
-- React Router
-- Axios
-- Context API
-
----
-
-## Backend
-
-- Node.js
-- Express.js
-- JWT
-- bcrypt
-- node-cron
-- Nodemailer
-
----
-
-## Database
-
-- PostgreSQL
-
----
-
-## DevOps
-
-- Docker
-- Docker Compose
-- Nginx
-
----
-
-# 📂 Project Structure
+The system runs as three coordinated Docker containers, orchestrated via `docker-compose.yml`:
 
 ```
-HireTrack
-│
-├── frontend/
-│   ├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── context/
-│   └── api/
-│
-├── backend/
-│   ├── controllers/
-│   ├── routes/
-│   ├── middleware/
-│   ├── config/
-│   └── database/
-│
+┌─────────────┐      ┌──────────────┐      ┌──────────────┐
+│  Frontend   │─────▶│   Backend    │─────▶│  PostgreSQL  │
+│ React + Vite│      │ Node/Express │      │   Database   │
+│  (Nginx)    │◀─────│   REST API   │◀─────│              │
+└─────────────┘      └──────────────┘      └──────────────┘
+                             │
+                             ▼
+                      ┌──────────────┐
+                      │  node-cron   │
+                      │ + nodemailer │
+                      │  (reminders) │
+                      └──────────────┘
+```
+
+**Backend startup flow** (`backend/src/index.js`): loads env vars → creates Express app → configures CORS/cookies/middleware → mounts routes → initializes the database → starts the cron scheduler. Clean, linear, and easy to reason about.
+
+---
+
+## 🧩 Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React, Vite, Axios, React Router |
+| **Backend** | Node.js, Express |
+| **Database** | PostgreSQL |
+| **Auth** | JWT (access + refresh tokens), bcrypt |
+| **Scheduled Jobs** | node-cron, nodemailer |
+| **Infrastructure** | Docker, Docker Compose, Nginx |
+
+---
+
+## 🔐 Why the Authentication Design Stands Out
+
+Rather than a single long-lived token, the app implements a proper **access + refresh token pattern**:
+
+- `backend/src/config/jwt.js` handles token generation and verification
+- `backend/src/middleware/auth.js` guards protected routes, validating tokens before allowing requests through
+- `frontend/src/api/axios.js` centralizes API calls, automatically attaches tokens, silently refreshes expired ones, and redirects to login on failure
+- Passwords are hashed with **bcrypt** before storage
+
+This is the kind of pattern used in real production systems, not just a toy `localStorage` token check — a strong signal of security awareness.
+
+---
+
+## 📊 Feature Highlights
+
+### Application Management
+Full create/read/update/delete flow for job applications, including CSV export — implemented cleanly across `routes/applications.js` and `controllers/applicationController.js`.
+
+### Analytics Dashboard
+Dedicated analytics endpoints (`routes/analytics.js`, `controllers/analyticsController.js`) power:
+- Application counts by status
+- Weekly activity trends
+- Upcoming follow-up tracking
+
+The dashboard isn't just decorative charts glued onto static data — it's backed by purpose-built database queries.
+
+### Automated Reminder Emails
+A `node-cron` job checks daily for applications needing follow-up and sends reminder emails via `nodemailer` — a great example of implementing background/scheduled work correctly in a Node app.
+
+### Centralized Error Handling
+A dedicated error-handling middleware ensures failures return clean, consistent responses instead of crashing the server — a small detail that reflects production-readiness.
+
+---
+
+## 📁 Project Structure
+
+```
+.
 ├── docker-compose.yml
-└── README.md
+├── backend/
+│   ├── Dockerfile
+│   ├── package.json
+│   └── src/
+│       ├── index.js                 # App entry point
+│       ├── config/
+│       │   ├── db.js                # DB connection + schema init
+│       │   ├── jwt.js               # Token generation/verification
+│       │   └── cron.js              # Scheduled reminder emails
+│       ├── middleware/
+│       │   ├── auth.js              # Route protection
+│       │   └── errorHandler.js      # Centralized error handling
+│       ├── routes/
+│       │   ├── auth.js
+│       │   ├── applications.js
+│       │   └── analytics.js
+│       └── controllers/
+│           ├── authController.js
+│           ├── applicationController.js
+│           └── analyticsController.js
+└── frontend/
+    ├── Dockerfile
+    ├── nginx.conf
+    ├── vite.config.js
+    ├── index.html
+    └── src/
+        ├── main.jsx                 # React entry point
+        ├── App.jsx                  # Route definitions
+        ├── index.css                # Design system / styling
+        ├── api/
+        │   └── axios.js             # Shared API client
+        ├── context/
+        │   └── AuthContext.jsx      # Global auth state
+        ├── components/
+        │   ├── layout/
+        │   │   ├── ProtectedLayout.jsx
+        │   │   └── Sidebar.jsx
+        │   └── ApplicationModal.jsx
+        └── pages/
+            ├── AuthPage.jsx
+            ├── Applications.jsx
+            └── Dashboard.jsx
 ```
 
 ---
 
-# 🔄 Application Flow
+## 🚀 Getting Started
 
-```
-User
-   │
-   ▼
-React Frontend
-   │
-Axios API Calls
-   │
-Express Server
-   │
-Authentication Middleware
-   │
-Controllers
-   │
-PostgreSQL Database
-   │
-Response
-   │
-Dashboard/UI Update
-```
+### Prerequisites
+- [Docker](https://www.docker.com/) and Docker Compose installed
 
----
-
-# 🔐 Authentication Flow
-
-```
-Register/Login
-
-        │
-
-        ▼
-
-Password Hashing
-
-        │
-
-        ▼
-
-JWT Access Token
-
-        │
-
-        ▼
-
-Protected API Access
-
-        │
-
-        ▼
-
-Automatic Token Refresh
-```
-
----
-
-# 📊 Dashboard Features
-
-✔ Summary Cards
-
-✔ Status Breakdown
-
-✔ Weekly Activity
-
-✔ Upcoming Follow-Ups
-
-✔ Interactive Charts
-
----
-
-# 📧 Reminder System
-
-```
-Cron Scheduler
-
-      │
-
-      ▼
-
-Check Follow-up Dates
-
-      │
-
-      ▼
-
-Send Reminder Email
-
-      │
-
-      ▼
-
-User Notification
-```
-
----
-
-# 🚀 Getting Started
-
-## Clone Repository
+### Run the full stack
 
 ```bash
-git clone https://github.com/yourusername/HireTrack.git
-
-cd HireTrack
+git clone <repository-url>
+cd hiretrack
+docker-compose up --build
 ```
 
----
+This spins up the PostgreSQL database, the Express backend, and the React frontend (served via Nginx) together — no manual environment juggling required.
 
-## Run with Docker
-
-```bash
-docker compose up --build
-```
-
----
-
-## Backend
+### Local development (without Docker)
 
 ```bash
+# Backend
 cd backend
-
 npm install
-
 npm run dev
-```
 
----
-
-## Frontend
-
-```bash
+# Frontend
 cd frontend
-
 npm install
-
 npm run dev
 ```
 
----
-
-# ⚙ Environment Variables
-
-Backend `.env`
-
-```env
-PORT=5000
-
-DATABASE_URL=
-
-JWT_SECRET=
-
-JWT_REFRESH_SECRET=
-
-EMAIL_USER=
-
-EMAIL_PASSWORD=
-```
+The Vite dev server proxies API requests to the backend, so both can run independently during development.
 
 ---
 
-# 📈 Highlights
+## 🗺️ End-to-End Flow 
 
-- Production-style project architecture
-- RESTful API Design
-- Secure JWT Authentication
-- Refresh Token Strategy
-- Background Cron Jobs
-- Dockerized Development
-- PostgreSQL Integration
-- CSV Export Functionality
-- Analytics Dashboard
-- Responsive UI
-- Clean Folder Structure
-- Modular Backend
-- Context-based State Management
+**Login:** `AuthPage.jsx` → `AuthContext` → `axios.js` → `routes/auth.js` → `authController.js` → `jwt.js`
+
+**Applications:** `Applications.jsx` → `routes/applications.js` → `applicationController.js` → PostgreSQL → table updates
+
+**Dashboard:** `Dashboard.jsx` → analytics endpoints → `analyticsController.js` → charts render
+
+**Reminders:** `cron.js` runs on schedule → checks DB for due follow-ups → sends email via `nodemailer`
 
 ---
 
-# 🧠 Software Engineering Concepts Demonstrated
+## 💬 Thoughts
 
-- Authentication & Authorization
-- REST API Design
-- Middleware Architecture
-- MVC Pattern
-- Database Design
-- Scheduled Background Jobs
-- State Management
-- Protected Routing
-- Containerization
-- Error Handling
-- Modular Code Organization
-- Responsive Frontend Development
+What stands out most about HireTrack is the **coherence** of the system — the auth pattern, database layer, API design, and frontend state management all fit together the way you'd expect from a real production app, not a disconnected set of tutorial features bolted together. It touches nearly every core skill expected of a full-stack engineer: relational schema design, secure auth, REST API design, background job scheduling, and a clean, componentized React frontend.
 
----
 
-# 📸 Screenshots
 
-> Add screenshots of:
 
-- Login Page
-- Dashboard
-- Applications Page
-- Analytics Charts
-- Reminder Emails
-
----
-
-# 🔮 Future Improvements
-
-- OAuth Login (Google/GitHub)
-- Resume Upload
-- AI Resume Matching
-- Interview Preparation Assistant
-- Kanban Board
-- Calendar Integration
-- Push Notifications
-- Mobile Responsive Enhancements
-- Advanced Analytics
-- Dark Mode
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repository
-
-2. Create your feature branch
-
-3. Commit your changes
-
-4. Push to your branch
-
-5. Open a Pull Request
-
----
-
-# ⭐ Support
-
-If you found this project useful, consider giving it a ⭐ on GitHub.
-
-It helps others discover the project and motivates further improvements.
