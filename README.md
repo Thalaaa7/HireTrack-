@@ -1,170 +1,229 @@
+# 🌍 WanderLust - Travel & Accommodation Platform
 
-# 🎯 HireTrack — Job Application Tracker
+A modern, full-stack travel and accommodation booking platform built with Next.js, featuring AI-powered travel recommendations, real-time booking system, and seamless user experience.
 
-> A full-stack job application tracking system built with React, Node.js/Express, and PostgreSQL — complete with JWT authentication, analytics dashboards, and automated email reminders.
+## ✨ Features
 
-## ✨ What HireTrack Does
+### 🏠 **Accommodation Management**
+- Browse and search travel accommodations
+- Advanced filtering by location, price, and amenities
+- Real-time availability and pricing
+- High-quality image galleries with Cloudinary integration
 
-HireTrack helps job seekers stay organized during their search. Users can:
+### 🤖 **AI-Powered Travel Assistant**
+- **Google Gemini Integration** for intelligent travel recommendations
+- Natural language query processing
+- Personalized destination suggestions
+- Budget-aware recommendations
 
-- 🔐 Register and log in securely
-- 📋 Add and manage job applications
-- 🔄 Track and update application status (applied, interviewing, offer, rejected, etc.)
-- 🔍 Search and filter applications
-- 📊 View analytics on a visual dashboard
-- 📧 Receive automated reminder emails for follow-ups
+### 👤 **User Authentication & Management**
+- Secure user registration and login
+- JWT-based authentication
+- User profile management
+- Booking history and management
 
-It spans **authentication, relational data modeling, REST APIs, data visualization, and scheduled background jobs** — a genuinely full-stack feature set.
+### 💳 **Payment Integration**
+- **Razorpay** payment gateway integration
+- Secure payment processing
+- Booking confirmation system
+- Transaction verification
 
----
+### 🗺️ **Location Services**
+- **Google Maps** integration for location autocomplete
+- Geocoding services for address validation
+- Interactive maps for property locations
 
-## 🧩 Tech Stack
+### ⚡ **Performance & Caching**
+- **Redis caching** for improved performance
+- Optimized database queries
+- Fast loading times with Next.js optimization
 
-| Layer | Technologies |
-|---|---|
-| **Frontend** | React, Vite, Axios, React Router |
-| **Backend** | Node.js, Express |
-| **Database** | PostgreSQL |
-| **Auth** | JWT (access + refresh tokens), bcrypt |
-| **Scheduled Jobs** | node-cron, nodemailer |
-| **Infrastructure** | Docker, Docker Compose, Nginx |
+### 📱 **Modern UI/UX**
+- Responsive design for all devices
+- Beautiful animations with Framer Motion
+- Intuitive user interface
+- Dark/light theme support
 
----
+## 🛠️ Tech Stack
 
-## 🔐 Why this Authentication Design ??
+### **Frontend**
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Animation library
+- **React Spinners** - Loading indicators
 
-Rather than a single long-lived token, the app implements a proper **access + refresh token pattern**:
+### **Backend**
+- **Next.js API Routes** - Serverless API endpoints
+- **MongoDB** - NoSQL database with Mongoose ODM
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
 
-- `backend/src/config/jwt.js` handles token generation and verification
-- `backend/src/middleware/auth.js` guards protected routes, validating tokens before allowing requests through
-- `frontend/src/api/axios.js` centralizes API calls, automatically attaches tokens, silently refreshes expired ones, and redirects to login on failure
-- Passwords are hashed with **bcrypt** before storage
-
-This is the kind of pattern used in real production systems, not just a toy `localStorage` token check — a strong signal of security awareness.
-
----
-
-## 📊 Feature Highlights
-
-### Application Management
-Full create/read/update/delete flow for job applications, including CSV export — implemented cleanly across `routes/applications.js` and `controllers/applicationController.js`.
-
-### Analytics Dashboard
-Dedicated analytics endpoints (`routes/analytics.js`, `controllers/analyticsController.js`) power:
-- Application counts by status
-- Weekly activity trends
-- Upcoming follow-up tracking
-
-The dashboard isn't just decorative charts glued onto static data — it's backed by purpose-built database queries.
-
-### Automated Reminder Emails
-A `node-cron` job checks daily for applications needing follow-up and sends reminder emails via `nodemailer` — a great example of implementing background/scheduled work correctly in a Node app.
-
-### Centralized Error Handling
-A dedicated error-handling middleware ensures failures return clean, consistent responses instead of crashing the server — a small detail that reflects production-readiness.
-
----
-
-## 📁 Project Structure
-
-```
-.
-├── docker-compose.yml
-├── backend/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-│       ├── index.js                 # App entry point
-│       ├── config/
-│       │   ├── db.js                # DB connection + schema init
-│       │   ├── jwt.js               # Token generation/verification
-│       │   └── cron.js              # Scheduled reminder emails
-│       ├── middleware/
-│       │   ├── auth.js              # Route protection
-│       │   └── errorHandler.js      # Centralized error handling
-│       ├── routes/
-│       │   ├── auth.js
-│       │   ├── applications.js
-│       │   └── analytics.js
-│       └── controllers/
-│           ├── authController.js
-│           ├── applicationController.js
-│           └── analyticsController.js
-└── frontend/
-    ├── Dockerfile
-    ├── nginx.conf
-    ├── vite.config.js
-    ├── index.html
-    └── src/
-        ├── main.jsx                 # React entry point
-        ├── App.jsx                  # Route definitions
-        ├── index.css                # Design system / styling
-        ├── api/
-        │   └── axios.js             # Shared API client
-        ├── context/
-        │   └── AuthContext.jsx      # Global auth state
-        ├── components/
-        │   ├── layout/
-        │   │   ├── ProtectedLayout.jsx
-        │   │   └── Sidebar.jsx
-        │   └── ApplicationModal.jsx
-        └── pages/
-            ├── AuthPage.jsx
-            ├── Applications.jsx
-            └── Dashboard.jsx
-```
-
----
+### **External Services**
+- **Google Gemini AI** - Travel recommendations
+- **Google Maps API** - Location services
+- **Cloudinary** - Image storage and optimization
+- **Razorpay** - Payment processing
+- **Upstash Redis** - Caching layer
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [Docker](https://www.docker.com/) and Docker Compose installed
+- Node.js 18+ 
+- MongoDB database
+- Google Cloud account (for Maps API)
+- Google AI Studio account (for Gemini API)
+- Cloudinary account
+- Razorpay account
+- Upstash Redis account
 
-### Run the full stack
+### Installation
 
-```bash
-git clone <repository-url>
-cd hiretrack
-docker-compose up --build
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd project_WanderLust
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Environment Setup**
+   
+   Create a `.env.local` file in the root directory with the following variables:
+
+   ```env
+   # Database
+   MONGODB_URL=your_mongodb_connection_string
+   
+   # Authentication
+   TOKEN_SECRET=your_jwt_secret_key
+   NEXT_PUBLIC_TOKEN_SECRET=your_public_jwt_secret
+   
+   # Google Services
+   GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_public_google_maps_key
+   
+   # AI Integration
+   GEMINI_API_KEY=your_gemini_api_key
+   
+   # Cloudinary (Image Storage)
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   
+   # Payment Gateway
+   RAZORPAY_KEY_ID=your_razorpay_key_id
+   RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+   NEXT_PUBLIC_RAZORPAY_KEY_ID=your_public_razorpay_key_id
+   
+   # Redis Cache
+   UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+   UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
+   
+   # Environment
+   NODE_ENV=development
+   ```
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. **Open your browser**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+
+## 🔧 API Endpoints
+
+### **Authentication**
+- `POST /api/users/signup` - User registration
+- `POST /api/users/login` - User login
+- `GET /api/users/logout` - User logout
+- `GET /api/users/getTokenData` - Get user data from token
+
+### **Listings**
+- `GET /api/listings/home` - Get all listings (with caching)
+- `GET /api/listings/[id]` - Get single listing
+- `POST /api/listings/uploadPhoto` - Upload listing images
+- `PUT /api/listings/edit` - Edit listing
+
+### **AI Assistant**
+- `POST /api/ai/query` - AI-powered travel recommendations
+
+### **Payments**
+- `POST /api/payment` - Create payment order
+- `POST /api/payment/verify` - Verify payment
+
+### **Cache Management**
+- `GET /api/cache` - Get cache status
+- `DELETE /api/cache` - Clear cache
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── bookings/          # Booking management pages
+│   ├── home/              # Main listing page
+│   ├── login/             # Authentication pages
+│   ├── signup/
+│   ├── new/               # Add new listing
+│   └── show/[id]/         # Listing details
+├── components/            # Reusable components
+├── dbConfig/             # Database configuration
+├── lib/                  # Utility libraries
+├── models/               # MongoDB models
+├── cloudConfig/          # Cloudinary configuration
+└── helper/               # Helper functions
 ```
 
-This spins up the PostgreSQL database, the Express backend, and the React frontend (served via Nginx) together — no manual environment juggling required.
+## 🎯 Key Features Explained
 
-### Local development (without Docker)
+### **AI Travel Assistant**
+The application uses Google Gemini AI to provide intelligent travel recommendations. Users can ask natural language queries like:
+- "Peaceful mountain retreat under $1500"
+- "Cultural city experience with good food"
+- "Beach destinations for families"
 
-```bash
-# Backend
-cd backend
-npm install
-npm run dev
+### **Smart Caching**
+Redis caching is implemented to improve performance:
+- Listings are cached for 30 minutes in production
+- Single listings cached for 1 hour
+- Cache invalidation on updates
 
-# Frontend
-cd frontend
-npm install
-npm run dev
-```
+### **Secure Payments**
+Razorpay integration ensures secure payment processing:
+- Order creation with proper validation
+- Webhook verification for payment confirmation
+- Transaction history tracking
 
-The Vite dev server proxies API requests to the backend, so both can run independently during development.
+## 🚀 Deployment
 
----
+### **Vercel (Recommended)**
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy automatically
 
-## 🗺️ End-to-End Flow 
+### **Other Platforms**
+The application can be deployed on any platform that supports Next.js:
+- Netlify
+- Railway
+- DigitalOcean App Platform
+- AWS Amplify
 
-**Login:** `AuthPage.jsx` → `AuthContext` → `axios.js` → `routes/auth.js` → `authController.js` → `jwt.js`
+## 🔒 Security Features
 
-**Applications:** `Applications.jsx` → `routes/applications.js` → `applicationController.js` → PostgreSQL → table updates
-
-**Dashboard:** `Dashboard.jsx` → analytics endpoints → `analyticsController.js` → charts render
-
-**Reminders:** `cron.js` runs on schedule → checks DB for due follow-ups → sends email via `nodemailer`
-
----
-
-## 💬 Thoughts
-
-What stands out most about HireTrack is the **coherence** of the system — the auth pattern, database layer, API design, and frontend state management all fit together the way you'd expect from a real production app, not a disconnected set of tutorial features bolted together. It touches nearly every core skill expected of a full-stack engineer: relational schema design, secure auth, REST API design, background job scheduling, and a clean, componentized React frontend.
-
-
-
-
+- JWT-based authentication
+- Password hashing with bcryptjs
+- Environment variable protection
+- Secure API endpoints
+- Input validation and sanitization
